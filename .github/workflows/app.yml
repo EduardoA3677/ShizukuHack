@@ -1,6 +1,7 @@
 name: App
 
 on:
+  workflow_dispatch:
   push:
     branches: [ master ]
     paths-ignore:
@@ -8,8 +9,8 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
-    if: ${{ !startsWith(github.event.head_commit.message, '[skip ci]') && github.repository_owner == 'RikkaApps' }}
+    runs-on: ubuntu-22.04
+    if: ${{ !startsWith(github.event.head_commit.message, '[skip ci]') && github.repository_owner == 'EduardoA3677' }}
 
     steps:
       - name: Checkout
