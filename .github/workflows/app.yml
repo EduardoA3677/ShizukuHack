@@ -23,6 +23,9 @@ jobs:
         with:
           java-version: 11
           distribution: 'temurin'
+      - name: Submodule
+        run: |
+          git submodule update --init --recursive
       - name: Write key
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
         run: |
