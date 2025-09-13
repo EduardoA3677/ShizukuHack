@@ -30,6 +30,7 @@ import android.os.ServiceManager;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import android.annotation.SuppressLint;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -224,6 +225,7 @@ public class ShizukuService extends Service<ShizukuUserServiceManager, ShizukuCl
     }
 
     @Override
+    @SuppressLint("NewApi") // userType access is properly protected by BuildUtils.atLeast30() check
     public void showPermissionConfirmation(int requestCode, @NonNull ClientRecord clientRecord, int callingUid, int callingPid, int userId) {
         ApplicationInfo ai = PackageManagerApis.getApplicationInfoNoThrow(clientRecord.packageName, 0, userId);
         if (ai == null) {
