@@ -67,7 +67,7 @@ object ShizukuSystemApis {
         return if (!Shizuku.pingBinder()) {
             ArrayList()
         } else try {
-            val listSlice: ParceledListSlice<PackageInfo>? = packageManager.getInstalledPackages(flags, userId) as ParceledListSlice<PackageInfo>?
+            val listSlice: ParceledListSlice<PackageInfo>? = packageManager.getInstalledPackages(flags, userId)
             return if (listSlice != null) {
                 listSlice.list
             } else ArrayList()

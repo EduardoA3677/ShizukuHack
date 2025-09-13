@@ -35,7 +35,6 @@ class ServerStatusViewHolder(private val binding: HomeServerStatusBinding, root:
         val context = itemView.context
         val status = data
         val ok = status.isRunning
-        val isRoot = status.uid == 0
         val apiVersion = status.apiVersion
         val patchVersion = status.patchVersion
         if (ok) {
