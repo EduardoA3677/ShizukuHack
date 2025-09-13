@@ -48,6 +48,7 @@ android {
     }
     packagingOptions {
         jniLibs {
+            useLegacyPackaging = true
             excludes += ['/kotlin/**']
         }
         resources {
