@@ -5,6 +5,7 @@ import android.content.res.Resources.Theme
 import android.graphics.Color
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.core.view.WindowInsetsCompat
 import moe.shizuku.manager.R
 import rikka.core.res.isNight
 import rikka.core.res.resolveColor
@@ -36,7 +37,24 @@ abstract class AppActivity : MaterialActivity() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             window?.decorView?.post {
-                if (window.decorView.rootWindowInsets?.systemWindowInsetBottom ?: 0 >= Resources.getSystem().displayMetrics.density * 40) {
+                val windowInsets = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    window.decorView.rootWindowInsets?.let { WindowInsetsCompat.toWindowInsetsCompat(it) }
+                } else {
+                    @Suppress("DEPRECATION")
+                    window.decorView.rootWindowInsets?.let { windowInsets ->
+                        WindowInsetsCompat.Builder()
+                            .setSystemWindowInsets(androidx.core.graphics.Insets.of(
+                                windowInsets.systemWindowInsetLeft,
+                                windowInsets.systemWindowInsetTop,
+                                windowInsets.systemWindowInsetRight,
+                                windowInsets.systemWindowInsetBottom
+                            ))
+                            .build()
+                    }
+                }
+                
+                val navigationBarHeight = windowInsets?.getInsets(WindowInsetsCompat.Type.navigationBars())?.bottom ?: 0
+                if (navigationBarHeight >= Resources.getSystem().displayMetrics.density * 40) {
                     window.navigationBarColor =
                         theme.resolveColor(android.R.attr.navigationBarColor) and 0x00ffffff or -0x20000000
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {

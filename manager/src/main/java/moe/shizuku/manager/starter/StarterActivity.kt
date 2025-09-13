@@ -106,7 +106,7 @@ class StarterActivity : AppBarActivity() {
     }
 }
 
-private class ViewModel(context: Context, root: Boolean, host: String?, port: Int) : androidx.lifecycle.ViewModel() {
+private class ViewModel(@Suppress("UNUSED_PARAMETER") context: Context, root: Boolean, host: String?, port: Int) : androidx.lifecycle.ViewModel() {
 
     private val sb = StringBuilder()
     private val _output = MutableLiveData<Resource<StringBuilder>>()
@@ -155,7 +155,7 @@ private class ViewModel(context: Context, root: Boolean, host: String?, port: In
 //                }
 //            }
 
-            val starter = Starter.writeDataFiles(application, true) ?: run {
+            Starter.writeDataFiles(application, true) ?: run {
                 sb.appendLine("Unable to write files")
                 postResult()
                 return@launch

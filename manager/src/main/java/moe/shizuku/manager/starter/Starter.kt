@@ -79,7 +79,7 @@ object Starter {
             return null
         }
 
-        val dir = File("/data/data/${application.packageName}") ?: return null
+        val dir = File("/data/data/${application.packageName}")
 
         dir.deleteRecursively()
         dir.mkdir()
@@ -103,7 +103,7 @@ object Starter {
                 }
             }
 
-            Log.e("Shizuku", "${dir.listFiles().map { "${it.absolutePath} + ${Files.getPosixFilePermissions(it.toPath())}" }}")
+            Log.e("Shizuku", "${dir.listFiles()?.map { "${it.absolutePath} + ${Files.getPosixFilePermissions(it.toPath())}" } ?: emptyList()}")
 
             File(starter)
         } catch (e: IOException) {

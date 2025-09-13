@@ -2,6 +2,8 @@ package moe.shizuku.manager.home
 
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Process
 import android.text.method.LinkMovementMethod
@@ -111,7 +113,12 @@ abstract class HomeActivity : AppBarActivity() {
                         resources.getDimensionPixelOffset(R.dimen.default_app_icon_size)
                     )
                 )
-                binding.versionName.text = packageManager.getPackageInfo(packageName, 0).versionName
+                binding.versionName.text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    packageManager.getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(0)).versionName
+                } else {
+                    @Suppress("DEPRECATION")
+                    packageManager.getPackageInfo(packageName, 0).versionName
+                }
                 MaterialAlertDialogBuilder(this)
                     .setView(binding.root)
                     .show()

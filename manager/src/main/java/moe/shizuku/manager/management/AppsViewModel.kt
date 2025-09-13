@@ -24,7 +24,7 @@ fun ComponentActivity.appsViewModel() = sharedViewModels { AppsViewModel(this) }
 @MainThread
 fun Fragment.appsViewModel() = activitySharedViewModels { AppsViewModel(requireContext()) }
 
-class AppsViewModel(context: Context) : ViewModel() {
+class AppsViewModel(@Suppress("UNUSED_PARAMETER") context: Context) : ViewModel() {
 
     private val _packages = MutableLiveData<Resource<List<PackageInfo>>>()
     val packages = _packages as LiveData<Resource<List<PackageInfo>>>

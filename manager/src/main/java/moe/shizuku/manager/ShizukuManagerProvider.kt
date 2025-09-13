@@ -1,5 +1,6 @@
 package moe.shizuku.manager
 
+import android.os.Build
 import android.os.Bundle
 import androidx.core.os.bundleOf
 import moe.shizuku.api.BinderContainer
@@ -31,7 +32,12 @@ class ShizukuManagerProvider : ShizukuProvider() {
                 extras.classLoader = BinderContainer::class.java.classLoader
 
                 val token = extras.getString(USER_SERVICE_ARG_TOKEN) ?: return null
-                val binder = extras.getParcelable<BinderContainer>(EXTRA_BINDER)?.binder ?: return null
+                val binder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    extras.getParcelable(EXTRA_BINDER, BinderContainer::class.java)?.binder
+                } else {
+                    @Suppress("DEPRECATION")
+                    extras.getParcelable<BinderContainer>(EXTRA_BINDER)?.binder
+                } ?: return null
 
                 val countDownLatch = CountDownLatch(1)
                 var reply: Bundle? = Bundle()

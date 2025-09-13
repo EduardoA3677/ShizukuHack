@@ -10,7 +10,7 @@ import moe.shizuku.manager.utils.CustomTabsHelper
 import rikka.recyclerview.BaseViewHolder
 import rikka.recyclerview.BaseViewHolder.Creator
 
-class LearnMoreViewHolder(binding: HomeLearnMoreBinding, root: View) : BaseViewHolder<Any?>(root) {
+class LearnMoreViewHolder(@Suppress("UNUSED_PARAMETER") binding: HomeLearnMoreBinding, root: View) : BaseViewHolder<Any?>(root) {
 
     companion object {
         val CREATOR = Creator<Any> { inflater: LayoutInflater, parent: ViewGroup? ->

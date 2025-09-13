@@ -3,6 +3,7 @@ package moe.shizuku.manager.authorization
 import android.app.Dialog
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.widget.TextView
@@ -93,7 +94,12 @@ class RequestPermissionActivity : AppActivity() {
         val uid = intent.getIntExtra("uid", -1)
         val pid = intent.getIntExtra("pid", -1)
         val requestCode = intent.getIntExtra("requestCode", -1)
-        val ai = intent.getParcelableExtra<ApplicationInfo>("applicationInfo")
+        val ai = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra("applicationInfo", ApplicationInfo::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            intent.getParcelableExtra<ApplicationInfo>("applicationInfo")
+        }
         if (uid == -1 || pid == -1 || ai == null) {
             finish()
             return

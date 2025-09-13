@@ -3,6 +3,7 @@ package moe.shizuku.manager.legacy
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import moe.shizuku.manager.MainActivity
@@ -37,7 +38,12 @@ class LegacyIsNotSupportedActivity : AppActivity() {
         }
 
         val ai = try {
-            packageManager.getApplicationInfo(callingComponent.packageName, PackageManager.GET_META_DATA)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                packageManager.getApplicationInfo(callingComponent.packageName, PackageManager.ApplicationInfoFlags.of(PackageManager.GET_META_DATA.toLong()))
+            } else {
+                @Suppress("DEPRECATION")
+                packageManager.getApplicationInfo(callingComponent.packageName, PackageManager.GET_META_DATA)
+            }
         } catch (e: Throwable) {
             finish()
             return
