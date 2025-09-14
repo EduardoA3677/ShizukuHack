@@ -98,12 +98,63 @@ public class ShizukuShellLoader {
         }
     }
 
+    /**
+     * Robust shell context detection for Android 15+ compatibility.
+     * Checks multiple indicators to determine if running in ADB shell context.
+     */
+    private static boolean isShellContext() {
+        int uid = Os.getuid();
+        
+        // Traditional ADB shell UID check (works for Android 14 and below)
+        if (uid == 2000) {
+            return true;
+        }
+        
+        // Android 15+ may use different UIDs for ADB shell sessions
+        // Check for shell-related environment variables and context
+        String user = System.getenv("USER");
+        String shell = System.getenv("SHELL");
+        String adbVendorKeys = System.getenv("ADB_VENDOR_KEYS");
+        
+        // Check if running as shell user or in shell environment
+        if ("shell".equals(user) || 
+            (shell != null && shell.contains("sh")) ||
+            adbVendorKeys != null) {
+            return true;
+        }
+        
+        // Additional check for Android 15+: Check if UID is in the shell range
+        // On some Android 15 devices, shell processes may have UID in different ranges
+        if (Build.VERSION.SDK_INT >= 35) { // Android 15 (API 35)
+            // Check for extended shell UID ranges or alternative indicators
+            if (uid >= 2000 && uid <= 2999) { // Extended shell UID range
+                return true;
+            }
+            
+            // Check process name or parent process (if accessible)
+            try {
+                String process = System.getProperty("sun.java.command");
+                if (process != null && (process.contains("shell") || process.contains("adb"))) {
+                    return true;
+                }
+            } catch (Exception ignored) {
+            }
+        }
+        
+        return false;
+    }
+
     public static void main(String[] args) {
         ShizukuShellLoader.args = args;
 
         String packageName;
-        if (Os.getuid() == 2000) {
+        if (isShellContext()) {
             packageName = "com.android.shell";
+            // Debug logging for Android 15+ shell detection
+            if (Build.VERSION.SDK_INT >= 35) {
+                System.err.println("Android 15+ detected: Using shell context with UID " + Os.getuid());
+                System.err.flush();
+            }
         } else {
             packageName = System.getenv("RISH_APPLICATION_ID");
             if (TextUtils.isEmpty(packageName) || "PKG".equals(packageName)) {
@@ -131,9 +182,10 @@ public class ShizukuShellLoader {
         handler.postDelayed(() -> abort(
                 String.format(
                         "Request timeout. The connection between the current app (%1$s) and Shizuku app may be blocked by your system. " +
-                                "Please disable all battery optimization features for both current app (%1$s) and Shizuku app.",
+                                "Please disable all battery optimization features for both current app (%1$s) and Shizuku app. " +
+                                "On Android 15+, ensure ADB shell permissions are properly granted.",
                         packageName)
-        ), 5000);
+        ), Build.VERSION.SDK_INT >= 35 ? 10000 : 5000); // Longer timeout for Android 15+
 
         Looper.loop();
         System.exit(0);

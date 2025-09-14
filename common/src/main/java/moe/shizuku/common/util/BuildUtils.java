@@ -15,6 +15,10 @@ public class BuildUtils {
         return SDK >= 31 || SDK == 30 && PREVIEW_SDK > 0;
     }
 
+    public static boolean atLeast35() {
+        return SDK >= 35 || SDK == 34 && PREVIEW_SDK > 0;
+    }
+
     public static boolean atLeast30() {
         return SDK >= 30;
     }
