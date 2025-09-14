@@ -29,16 +29,20 @@ jobs:
       - name: Write key
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/master'
         run: |
-          touch signing.properties
-          echo KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }} >> signing.properties
-          echo KEYSTORE_ALIAS=${{ secrets.KEYSTORE_ALIAS }} >> signing.properties
-          echo KEYSTORE_ALIAS_PASSWORD='${{ secrets.KEYSTORE_ALIAS_PASSWORD }}' >> signing.properties
-          echo KEYSTORE_FILE=../key.jks >> signing.properties
-          echo ${{ secrets.KEYSTORE }} | base64 --decode > key.jks
+          if [[ -n "${{ secrets.KEYSTORE }}" ]]; then
+            touch signing.properties
+            echo KEYSTORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }} >> signing.properties
+            echo KEYSTORE_ALIAS=${{ secrets.KEYSTORE_ALIAS }} >> signing.properties
+            echo KEYSTORE_ALIAS_PASSWORD='${{ secrets.KEYSTORE_ALIAS_PASSWORD }}' >> signing.properties
+            echo KEYSTORE_FILE=../key.jks >> signing.properties
+            echo ${{ secrets.KEYSTORE }} | base64 --decode > key.jks
+            echo "KEYSTORE_CREATED=true" >> $GITHUB_ENV
+          fi
       - name: Write temporary key
-        if: hashFiles('key.jks') == '' && !steps.vars.outputs.HAS_SECRET
+        if: env.KEYSTORE_CREATED != 'true'
         run: |
-          keytool -genkey -alias a -dname CN=_ -storepass passwd -keypass passwd -keystore key.jks
+          touch signing.properties
+          keytool -genkey -alias a -dname CN=_ -storepass passwd -keypass passwd -keyalg RSA -keystore key.jks
           echo KEYSTORE_PASSWORD=passwd >> signing.properties
           echo KEYSTORE_ALIAS=a >> signing.properties
           echo KEYSTORE_ALIAS_PASSWORD=passwd >> signing.properties
